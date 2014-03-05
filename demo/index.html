@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Epicycle Demonstrator</title>
+        <link rel="stylesheet" type="text/css" href="style.css"></link>
+        <script src="../lib/fft.js"></script>
+        <script src="../src/epicycles.js"></script>
+        <script src="../src/grid.js"></script>
+        <script src="../src/simulator.js"></script>
+        <script src="controls.js"></script>
+        <script src="gridcontroller.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function(event) {
+                controls.simulator.createSlider({
+                    onchange: function(percent) {
+                        sim.pause();
+                        sim.t = Math.PI * 2 * percent / 100;
+                        sim.render();
+                        controls.simulator.setPlayState(false);
+                    }
+                });
+                //setting up UI
+                controls.simulator.createButtons({
+                    play: function(){sim.speed = 1; sim.play();},
+                    pause: function(){sim.pause();},
+                    stepForward: function(){
+                        sim.pause();
+                        sim.step(.1);
+                        controls.simulator.slider.setValue(sim.t / (2 * Math.PI) * 100);
+                    },
+                    stepBackward: function(){
+                        sim.pause();
+                        sim.step(-.1);
+                        controls.simulator.slider.setValue(sim.t / (2 * Math.PI) * 100);
+                    },
+                    fastForward: function() {
+                        sim.speed *= 1.5;
+                        sim.play();
+                    }
+                });
+
+                var gearSelect = document.getElementById("max-gear-select");
+
+                gearSelect.addEventListener("change", function(){
+                    controller.numberOfGears = parseInt(gearSelect.value, 10);
+                    controller.refreshSim();
+                });
+                //Line
+                //var points = [[0,1],[0,0],[0,-1],[0,0]];
+                //Cross
+                //var points = [[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1],[0,1]];
+                //Square
+                var points = [[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1],[0,1]];
+                var canvas = document.getElementById("slate");
+                var grid = new Grid(canvas, 70);
+                var numberOfGears = parseInt(gearSelect.value, 10);
+                var controller = new GridController(grid, points, numberOfGears);
+
+                function setGearSelectCount(count) {
+                    for (var i = 1; i <= count; i++) {
+                        gearSelect.options[i - 1] = new Option(i, i);
+                    }
+                };
+                setGearSelectCount(points.length);
+                gearSelect.selectedIndex = points.length - 1;
+                controller.addPointsChangedHandler(function(points) {
+                    var oldSel = gearSelect.selectedIndex;
+                    var oldLen = gearSelect.options.length;
+
+                    setGearSelectCount(points.length);
+
+                    if (oldSel == oldLen - 1) {
+                        gearSelect.selectedIndex = points.length - 1;
+                    } else {
+                        gearSelect.selectedIndex = oldSel
+                    }
+                });
+
+                controller.sim.addRenderStep(function(){
+                    if (controller.sim.playing) {
+                        controls.simulator.slider.setValue(sim.t / (2 * Math.PI) * 100);
+                    }
+                });
+
+                controller.refreshSim();
+                var sim = controller.sim;
+            });
+        </script>
+    </head>
+    <body>
+        <h1>Drawing by Roulettes</h1>
+        <p class="intro">If you follow a dot on the edge of a disk as it rotates it will trace out a circle. If you place a second disk on top of the first and rotate both, a dot on the edge of the second disk will trace a more complex curve, called an epicycle. Adding more and more disks will produce more and more complex epicycles, and in fact, given the right sizes of disks, you can create <em>any</em> shape you desire.</p>
+        <p class="intro">To see this in action, play with the simulator below. You can add points by double-clicking, and remove them by right-clicking an existing point.</p>
+        <div id="applet-container">
+        <div id="grid-controls">
+            <p>Grid Controls</p>
+        </div>
+        <canvas id="slate" width="600" height="500">Your browser doesn't support canvas, try using a more up-to-date browser.</canvas>
+        <div id="epicycles-controls">
+            <p>Maximum number of gears to use: 
+                <select id="max-gear-select"></select>
+            </p>
+        </div>
+        <div id="simulator-controls">
+            <div class="slider" id="time-slider">
+                <div class="slider-bar"></div>
+                <div class="slider-button"></div>
+            </div>
+            <div class="buttons">
+                <button id="step-backward">Step Back</button>
+                <button id="pause-play" class="pause">Pause</button>
+                <button id="step-forward">Step Forward</button>
+                <button id="fast-forward">Fast Forward</button>
+            </div>
+        </div>
+        </div>
+    </body>
+</html>

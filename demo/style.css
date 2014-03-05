@@ -1,0 +1,54 @@
+#applet-container {
+    width: 1000px;
+    margin: auto;
+}
+
+#slate {
+    border: 2px solid #000;
+    width: 600px;
+    display: block;
+    float: left;
+}
+
+#grid-controls, #epicycles-controls {
+    width: 190px;
+    display: block;
+    float: left;
+    height: 100%;
+    margin: 0 4px;
+}
+
+#simulator-controls {
+    clear: both;
+    width: 600px;
+    display: block;
+    margin: auto;
+    text-align: center;
+}
+
+.slider {
+    display: block;
+    height: 30px;
+    position: relative;
+    margin: 0 10px;
+}
+.slider>.slider-bar {
+    border-bottom: 1px solid #AAA;
+    position: absolute;
+    top: 14px;
+    height: 1px;
+    width: 100%;
+}
+.slider>.slider-button {
+    width: 20px;
+    height: 20px;
+    top: 5px;
+    margin-left: -11px;
+    border: 1px solid #666;
+    border-radius: 2px;
+    background-color: #999;
+    color: #333;
+    position: absolute;
+    cursor: default;
+    left: 0%;
+}

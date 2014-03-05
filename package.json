@@ -1,0 +1,21 @@
+{
+    "name": "epicycles",
+    "version": "0.0.1",
+    "author": "Brett van Zuiden",
+    "description": "A program for determining the sizes and offsets of gears to draw a shape based on the method of epicycles",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/brettcvz/epicycles.git"
+    },
+    "main": "server.js",
+    "dependencies": {
+        "fft": "~0.2.1"
+    },
+    "devDependencies" :{
+        "mocha": ">=1.1.0"
+    },
+    "scripts": {
+        "start": "node server.js",
+        "test": "mocha -R spec"
+    }
+}
