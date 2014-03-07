@@ -12,6 +12,9 @@ function Grid(canvas, scale) {
 
     this.path = [];
 
+    this.showAxes = true;
+    this.showGrid = true;
+
     this.drawGrid();
 };
 
@@ -21,32 +24,43 @@ Grid.prototype.drawGrid = function() {
     ctx.beginPath();
 
     //Axes
-    ctx.moveTo(this.originU, 0);
-    ctx.lineTo(this.originU, this.height);
-    ctx.moveTo(0, this.originV);
-    ctx.lineTo(this.width, this.originV);
+    if (this.showAxes) {
+        ctx.moveTo(this.originU, 0);
+        ctx.lineTo(this.originU, this.height);
+        ctx.moveTo(0, this.originV);
+        ctx.lineTo(this.width, this.originV);
+    }
 
-    var grid = this;
-    var plusSign = function(u, v) {
-        //should always be same size relative to grid
-        size = 5;
-        ctx.moveTo(u - size, v);
-        ctx.lineTo(u + size, v);
-        ctx.moveTo(u, v - size);
-        ctx.lineTo(u, v + size);
-    };
+    if (this.showGrid) {
+        var grid = this;
+        var plusSign = function(u, v) {
+            //should always be same size relative to grid
+            size = 5;
+            ctx.moveTo(u - size, v);
+            ctx.lineTo(u + size, v);
+            ctx.moveTo(u, v - size);
+            ctx.lineTo(u, v + size);
+        };
 
-    for (var x = 0; (x * this.scale) + this.originU < this.width; x++) {
-        for (var y = 0; (y * this.scale) + this.originV < this.height; y++) {
-            //All 4 intersections [we double up on the axes, but who cares]
-            plusSign(x * this.scale + this.originU, y * this.scale + this.originV);
-            plusSign(-x * this.scale + this.originU, y * this.scale + this.originV);
-            plusSign(x * this.scale + this.originU, -y * this.scale + this.originV);
-            plusSign(-x * this.scale + this.originU, -y * this.scale + this.originV);
+        for (var x = 0; (x * this.scale) + this.originU < this.width; x++) {
+            for (var y = 0; (y * this.scale) + this.originV < this.height; y++) {
+                //All 4 intersections [we double up on the axes, but who cares]
+                plusSign(x * this.scale + this.originU, y * this.scale + this.originV);
+                plusSign(-x * this.scale + this.originU, y * this.scale + this.originV);
+                plusSign(x * this.scale + this.originU, -y * this.scale + this.originV);
+                plusSign(-x * this.scale + this.originU, -y * this.scale + this.originV);
+            }
         }
     }
 
     this.context.stroke();
+};
+
+Grid.prototype.drawLabeledPoint = function(point, label) {
+    this.drawPoint(point);
+    var uvPoint = this.transform(point);
+    //offset down and to the right
+    this.context.fillText(label, uvPoint[0] + 5, uvPoint[1] + 10);
 };
 
 Grid.prototype.drawPoint = function(point, size, color) {

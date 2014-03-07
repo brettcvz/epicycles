@@ -62,7 +62,6 @@ epicycles.calculateGears = function(points, maxNumber, unidirectional) {
             addGear(-i, epicycles.toPolar(coeffs[n - i]));
         }
     }
-    console.log(gears);
     //sort by magnitude
     gears.sort(function(a, b) {
         return b[1] - a[1];

@@ -5,6 +5,7 @@ function Simulator(grid, gears, speed) {
     this.reset();
 
     this.renderSteps = [];
+    this.showPath = true;
 
     this.renderLoop();
 };
@@ -82,10 +83,13 @@ Simulator.prototype.render = function() {
         offsetX = endX;
         offsetY = endY;
     }
+
     //Save the final point for drawing later
     this.path.push([offsetX, offsetY]);
 
-    this.drawPath();
+    if (this.showPath) {
+        this.drawPath();
+    }
 };
 
 Simulator.prototype.drawPath = function(){

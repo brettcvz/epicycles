@@ -6,10 +6,14 @@ function GridController(grid, points, numberOfGears) {
     this.sim = new Simulator(grid, [], 1);
     this.changeHandlers = [];
 
+    this.showPoints = true;
+
     var gc = this;
     this.sim.addRenderStep(function(){
-        gc.drawPoints();
-        gc.highlightPoints();
+        if (gc.showPoints) {
+            gc.drawPoints();
+            gc.highlightPoints();
+        }
     });
 
     //I don't want to make points into objects, so I keep their state in
@@ -40,6 +44,9 @@ GridController.prototype.addPointsChangedHandler = function(handler) {
 
 GridController.prototype.pointsChanged = function(handler) {
     var self = this;
+    this.points.forEach(function(point, i){
+        self.pointState[i] = {highlighted: false};
+    });
     this.changeHandlers.forEach(function(handler){handler(self.points);});
     this.refreshSim();
 };
@@ -101,7 +108,11 @@ GridController.prototype.rightClick = function(e) {
 };
 
 GridController.prototype.mouseMove = function(e) {
-    var pointXY = this.clientToXY(e.clientX, e.clientY);
+    if (!this.showPoints) {
+        return;
+    }
+
+    var pointXY = this.eventToXY(e);
     var self = this;
     if (this.dragging) {
         //find first highlighted point, move it
@@ -119,6 +130,8 @@ GridController.prototype.mouseMove = function(e) {
         });
     } else {
         this.points.some(function(point, i){
+            if (!self.pointState[i]) {return false;}
+
             if (self.doPointsOverlap(pointXY, point)) {
                 self.pointState[i].highlighted = true;
             } else {
@@ -130,48 +143,51 @@ GridController.prototype.mouseMove = function(e) {
 };
 
 GridController.prototype.dblclick = function(e) {
-    var pointXY = this.clientToXY(e.clientX, e.clientY);
+    var pointXY = this.eventToXY(e);
     //edge case: points array is <= 1 element
     if (this.points.length <= 1) {
         this.points.push(pointXY);
         this.pointState.push({highlighted: true});
-    }
-    //add point next to nearest neighbor. Whether adding before or after
-    //depends on what the new point is "between"
-    var nearest = this.nearestPoints(pointXY);
-    var near_index = this.points.indexOf(nearest[0]);
-    var before_index = (near_index + this.points.length - 1) % this.points.length;
-    var after_index = (near_index + 1) % this.points.length;
-
-    //Call the nearest point N, the one before B, the one after A, and where we clicked X.
-    //We want to determine if X is "between" B and N, or "between" N and A
-    //I use quotes because we're not looking for colinear, but instead what's expected
-    //by the user as "closer". We can't actually use linear distance either, because
-    //we could be colinear with B and N, but N and A are close together, so we're closer to A
-    //The best way to calculate if X is "between" B and N vs N and A is determination of
-    //angles. If Angle(B-X-N) > (N-X-A), we're between B and N, and visa-versa.
-    //We calculate using dot products, given cos(theta) = (a * b)/(|a||b|)
-    //We won't have anything > 180, so greater angle means smaller cosine
-    //so we flip the > sign and don't take the arccos
-    //Since we use XN in both, we don't need to divide by |N|, so we get
-    //put_before = (XB*XN)/|XB| < (XA*XN)/|XA|
-    var B = this.points[before_index];
-    var N = nearest[0];
-    var A = this.points[after_index];
-    var XB = [B[0] - pointXY[0], B[1] - pointXY[1]];
-    var XN = [N[0] - pointXY[0], N[1] - pointXY[1]];
-    var XA = [A[0] - pointXY[0], A[1] - pointXY[1]];
-    var cos_bxn = (XB[0]*XN[0] + XB[1]*XN[1])/Math.sqrt(XB[0]*XB[0]+XB[1]*XB[1]);
-    var cos_axn = (XA[0]*XN[0] + XA[1]*XN[1])/Math.sqrt(XA[0]*XA[0]+XA[1]*XA[1]);
-
-    var put_before = cos_bxn < cos_axn;
-    if (put_before) {
-        this.points.splice(near_index, 0, pointXY);
-        //yuck
-        this.pointState.splice(near_index, 0, {highlighted: true});
     } else {
-        this.points.splice(after_index, 0, pointXY);
-        this.pointState.splice(after_index, 0, {highlighted: true});
+        //add point next to nearest neighbor. Whether adding before or after
+        //depends on what the new point is "between"
+        var nearest = this.nearestPoints(pointXY);
+        var near_index = this.points.indexOf(nearest[0]);
+        var before_index = (near_index + this.points.length - 1) % this.points.length;
+        var after_index = (near_index + 1) % this.points.length;
+
+        //Call the nearest point N, the one before B, the one after A, and where we clicked X.
+        //We want to determine if X is "between" B and N, or "between" N and A
+        //I use quotes because we're not looking for colinear, but instead what's expected
+        //by the user as "closer". We can't actually use linear distance either, because
+        //we could be colinear with B and N, but N and A are close together, so we're closer to A
+        //The best way to calculate if X is "between" B and N vs N and A is determination of
+        //angles. If Angle(B-X-N) > (N-X-A), we're between B and N, and visa-versa.
+        //We calculate using dot products, given cos(theta) = (a * b)/(|a||b|)
+        //We won't have anything > 180, so greater angle means smaller cosine
+        //so we flip the > sign and don't take the arccos
+        //Since we use XN in both, we don't need to divide by |N|, so we get
+        //put_before = (XB*XN)/|XB| < (XA*XN)/|XA|
+        var B = this.points[before_index];
+        var N = nearest[0];
+        var A = this.points[after_index];
+        var XB = [B[0] - pointXY[0], B[1] - pointXY[1]];
+        var XN = [N[0] - pointXY[0], N[1] - pointXY[1]];
+        var XA = [A[0] - pointXY[0], A[1] - pointXY[1]];
+        var cos_bxn = (XB[0]*XN[0] + XB[1]*XN[1])/Math.sqrt(XB[0]*XB[0]+XB[1]*XB[1]);
+        var cos_axn = (XA[0]*XN[0] + XA[1]*XN[1])/Math.sqrt(XA[0]*XA[0]+XA[1]*XA[1]);
+
+        var put_before = cos_bxn < cos_axn;
+        if (put_before) {
+            this.points.splice(near_index, 0, pointXY);
+            //yuck
+            this.pointState.splice(near_index, 0, {highlighted: true});
+        } else {
+            //We actually want to go after, as it feels more natural when editing
+            //than putting the new point at the beginning
+            this.points.splice(near_index + 1, 0, pointXY);
+            this.pointState.splice(near_index + 1, 0, {highlighted: true});
+        }
     }
 
     this.pointsChanged();
@@ -179,8 +195,8 @@ GridController.prototype.dblclick = function(e) {
 
 GridController.prototype.drawPoints = function() {
     var grid = this.grid;
-    this.points.forEach(function(point) {
-        grid.drawPoint(point);
+    this.points.forEach(function(point, i) {
+        grid.drawLabeledPoint(point, i + 1);
     });
 };
 
@@ -188,16 +204,17 @@ GridController.prototype.highlightPoints = function() {
     var grid = this.grid;
     var self = this;
     this.points.forEach(function(point, i) {
-        if (self.pointState[i].highlighted) {
+        if (i in self.pointState && self.pointState[i].highlighted) {
             grid.highlightPoint(point);
         }
     });
 };
 
 /*Utilities*/
-GridController.prototype.clientToXY = function(clientX, clientY) {
-    return this.grid.inverse([clientX - this.grid.canvas.offsetLeft,
-                              clientY - this.grid.canvas.offsetTop]);
+GridController.prototype.eventToXY = function(e) {
+    var x = e.pageX - this.grid.canvas.offsetLeft;
+    var y = e.pageY - this.grid.canvas.offsetTop;
+    return this.grid.inverse([x, y]);
 };
 
 GridController.prototype.doPointsOverlap = function(point1, point2, epsilon) {

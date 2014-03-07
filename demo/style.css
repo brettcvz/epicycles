@@ -52,3 +52,6 @@
     cursor: default;
     left: 0%;
 }
+#share-pane {
+    display: none;
+}
