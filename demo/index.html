@@ -26,17 +26,64 @@
         <p>Imagine you followed a single point on the edge of a rotating disk. If you traced it out for a full cycle, you'd get a circle:</p>
         <div class="example epicycle-display" data-points="600500400500"
             data-name="circle" data-editable="false"
-            data-simulator-controls="true" data-grid-controls="false" data-show-grid="false" data-show-points="false">
+            data-simulator-controls="true" data-grid-controls="false" data-show-grid="false" data-show-points="false"
+            data-width="300" data-height="200" data-scale="50">
+        </div>
+        <p>If you wanted to express this path as a math equation, if we call the radius of the disk R and the speed it's rotating w, then the point on the path drawn at time t is given by:</p>
+        <div>
+            x(t) = R*cos(w*t)
+            y(t) = R*sin(w*t)
         </div>
         <p>If you added a second rotating disk and traced a point around <em>it's</em> edge, you'd get a flower shape:</p>
-        <div class="example epicycle-display" data-points="600500400500"
+        <div class="example epicycle-display" data-points="600500500500500600500500400500500500500400500500"
+            data-autoplay="false"
             data-name="flower" data-editable="false"
             data-simulator-controls="true" data-grid-controls="false"
                 data-show-grid="false"
                 data-show-points="false"
-                data-num-gears="2">
+                data-num-gears="2"
+                data-width="300" data-height="200" data-scale="80">
         </div>
+        <p>Turning this more complex path into an equation isn't too hard either, if you notice that the overall position at time t is the the position at time t due to the first disk plus the position at time t due to the second disk:</p>
+        <div>
+            x(t) = R1*cos(w1*t) + R2*cos(w2*t)
+            y(t) = R1*sin(w*t) + R2*cos(w2*t)
+        </div>
+        <p>By adding additional disks and varying their speeds and sizes, you can get increasing complex curves, called <em>epicycles</em></p>
+        <div class="example epicycle-display" data-points="600500600400300600600600400400"
+            data-name="complex" data-editable="false"
+            data-autoplay="false"
+            data-simulator-controls="true" data-grid-controls="false"
+                data-show-grid="false"
+                data-show-points="false"
+                data-num-gears="4"
+                data-width="400" data-height="300" data-scale="60">
+        </div>
+        <p>Epicycles are curves defined by the equations
+            x(t) = sum(cos...)
+            y(t) = sum(sin...)
+        </p>
+        <p>Let's dive deeper into what forms these epicycles can take. Do all epicycles have to be "curvy"? Well, if we have two disks rotating in opposite directions, we can create a straight line:</p>
+        <div class="example epicycle-display" data-points="500600500500500400500500"
+            data-name="line" data-editable="false"
+            data-autoplay="false"
+            data-simulator-controls="true" data-grid-controls="false"
+                data-show-grid="false"
+                data-show-points="false"
+                data-num-gears="2"
+                data-width="300" data-height="200" data-scale="80">
+        </div>
+        <p>So it looks like we can create epicycles that are simple curves like a circle, crazy complex curves that look like who-knows-what, and a simple straight line. Also, it seems like the more disks we have, the more complex the curves can get. Given this, maybe if we have enough disks, and we choose the right sizes for each of the disks, and have them spin at the appropriate speeds, we can create <em>any closed shape</em>. And as it turns out, we can! Here's a few cool examples:
+        </p>
+        <p>
         <p class="intro">If you follow a dot on the edge of a disk as it rotates it will trace out a circle. If you place a second disk on top of the first and rotate both, a dot on the edge of the second disk will trace a more complex curve, called an epicycle. Adding more and more disks will produce more and more complex epicycles, and in fact, given the right sizes of disks, you can create <em>any</em> shape you desire.</p>
+        <div class="example epicycle-display" data-points="700500500500500700500500300500500500500300500500"
+            data-name="custom" data-editable="true"
+            data-autoplay="false"
+            data-simulator-controls="true" data-grid-controls="true"
+                data-show-grid="true"
+                data-show-points="true">
+        </div>
         <p class="intro">To see this in action, play with the simulator below. You can add points by double-clicking, and remove them by right-clicking an existing point.</p>
         <div id="applet-container">
         <div id="grid-controls">

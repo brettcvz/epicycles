@@ -21,9 +21,11 @@ function GridDisplay(config) {
     getDefault(this.config, config, "showPoints", true);
     getDefault(this.config, config, "showPath", true);
     getDefault(this.config, config, "editable", true);
+    getDefault(this.config, config, "autoplay", true);
     getDefault(this.config, config, "width", 600);
     getDefault(this.config, config, "height", 500);
     getDefault(this.config, config, "numGears", 10);
+    getDefault(this.config, config, "scale", 70);
 }
 
 GridDisplay.prototype.loadAndRenderInto = function(elem) {
@@ -40,10 +42,12 @@ GridDisplay.prototype.load = function(elem) {
         "show-points": "showPoints",
         "show-path": "showPath",
         "editable": "editable",
+        "autoplay": "autoplay",
         "name": "name",
         "width": "width",
         "height": "height",
         "num-gears": "numGears",
+        "scale": "scale",
     }
     var config = this.config;
 
@@ -71,6 +75,7 @@ GridDisplay.prototype.load = function(elem) {
     loadAttribute("width");
     loadAttribute("height");
     loadAttribute("num-gears");
+    loadAttribute("scale");
 
     if (elem.hasAttribute("data-points")) {
         this.config.points = this.parsePoints(elem.getAttribute("data-points"));
@@ -101,7 +106,8 @@ GridDisplay.prototype.render = function() {
     canvas.innerText = "Your browser doesn't support canvas, try using a more up-to-date browser.";
 
     //TODO: pull out scale (70)
-    var grid = new Grid(canvas, 70);
+    var scale = parseInt(this.config.scale, 10);
+    var grid = new Grid(canvas, scale);
     grid.showGrid = this.config.showGrid;
     grid.showAxes = this.config.showAxes;
 
@@ -130,7 +136,7 @@ GridDisplay.prototype.render = function() {
         });
     }
 
-    controller.refreshSim();
+    controller.refreshSim(this.config.autoplay);
     return container;
 }
 
@@ -234,6 +240,7 @@ GridDisplay.prototype.createSimulatorControls = function(sim) {
             pausePlay.className = pausePlay.className.replace("pause", "play");
         }
     };
+    setPlayState(this.config.autoplay);
     
     var curr = this;
     var actions = {

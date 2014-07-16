@@ -54,7 +54,9 @@ GridController.prototype.pointsChanged = function(handler) {
     this.refreshSim();
 };
 
-GridController.prototype.refreshSim = function() {
+GridController.prototype.refreshSim = function(autoplay) {
+    var autoplay = autoplay !== undefined ? !!autoplay : true;
+
     var gears = [];
     if (this.points.length > 0) {
         var gears = epicycles.calculateGears(this.points, this.numberOfGears);
@@ -63,9 +65,11 @@ GridController.prototype.refreshSim = function() {
     var self = this;
     this.sim.setGears(gears);
     //controls.simulator.slider.setValue(0);
-    setTimeout(function(){
-        self.resumePlaying();
-    }, 5);
+    if (autoplay) {
+        setTimeout(function(){
+            self.resumePlaying();
+        }, 5);
+    }
 };
 
 GridController.prototype.resumePlaying = function() {
