@@ -55,3 +55,8 @@
 #share-pane {
     display: none;
 }
+
+.example {
+    width: 600px;
+    margin: auto;
+}

@@ -59,7 +59,7 @@ GridController.prototype.refreshSim = function() {
 
     var self = this;
     this.sim.setGears(gears);
-    controls.simulator.slider.setValue(0);
+    //controls.simulator.slider.setValue(0);
     setTimeout(function(){
         self.resumePlaying();
     }, 5);
@@ -67,9 +67,9 @@ GridController.prototype.refreshSim = function() {
 
 GridController.prototype.resumePlaying = function() {
     //Restarts sim if we are playing
-    if (controls.simulator.getPlayState()) {
-        this.sim.play();
-    }
+    //if (controls.simulator.getPlayState()) {
+    this.sim.play();
+    //}
 };
 
 /*Events*/
