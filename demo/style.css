@@ -1,16 +1,15 @@
-#applet-container {
-    width: 1000px;
+.applet-container {
     margin: auto;
 }
 
-#slate {
+.slate {
     border: 2px solid #000;
     width: 600px;
     display: block;
     float: left;
 }
 
-#grid-controls, #epicycles-controls {
+.grid-controls, .epicycles-controls {
     width: 190px;
     display: block;
     float: left;
@@ -18,9 +17,8 @@
     margin: 0 4px;
 }
 
-#simulator-controls {
+.simulator-controls {
     clear: both;
-    width: 600px;
     display: block;
     margin: auto;
     text-align: center;
@@ -54,9 +52,4 @@
 }
 #share-pane {
     display: none;
-}
-
-.example {
-    width: 600px;
-    margin: auto;
 }

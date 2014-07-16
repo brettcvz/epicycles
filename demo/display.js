@@ -20,6 +20,7 @@ function GridDisplay(config) {
     getDefault(this.config, config, "showAxes", true);
     getDefault(this.config, config, "showPoints", true);
     getDefault(this.config, config, "showPath", true);
+    getDefault(this.config, config, "editable", true);
     getDefault(this.config, config, "width", 600);
     getDefault(this.config, config, "height", 500);
     getDefault(this.config, config, "numGears", 10);
@@ -38,10 +39,11 @@ GridDisplay.prototype.load = function(elem) {
         "show-axes": "showAxes",
         "show-points": "showPoints",
         "show-path": "showPath",
+        "editable": "editable",
         "name": "name",
         "width": "width",
         "height": "height",
-        "numGears": "numGears",
+        "num-gears": "numGears",
     }
     var config = this.config;
 
@@ -68,7 +70,7 @@ GridDisplay.prototype.load = function(elem) {
     loadAttribute("name");
     loadAttribute("width");
     loadAttribute("height");
-    loadAttribute("numGears");
+    loadAttribute("num-gears");
 
     if (elem.hasAttribute("data-points")) {
         this.config.points = this.parsePoints(elem.getAttribute("data-points"));
@@ -90,6 +92,7 @@ GridDisplay.prototype.render = function() {
     var curr = this;
     var container = document.createElement("div");
     container.className = "applet-container";
+    container.style.width = this.config.width + "px";
 
     var canvas = document.createElement("canvas");
     canvas.className = "slate";
@@ -109,7 +112,8 @@ GridDisplay.prototype.render = function() {
     }
 
     var numberOfGears = parseInt(this.config.numGears, 10);
-    var controller = new GridController(grid, this.config.points, numberOfGears);
+    console.log(this.config);
+    var controller = new GridController(grid, this.config.points, numberOfGears, this.config.editable);
     controller.sim.showPath = this.config.showPath;
     controller.showPoints = this.config.showPoints;
 
@@ -199,7 +203,7 @@ GridDisplay.prototype.createSimulatorControls = function(sim) {
             sim.pause();
             sim.t = Math.PI * 2 * percent / 100;
             sim.render();
-            //controls.simulator.setPlayState(false);
+            setPlayState(false);
         }
     });
 

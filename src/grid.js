@@ -128,3 +128,19 @@ Grid.prototype.drawStick = function(x1, y1, x2, y2, color) {
     this.context.arc(end[0], end[1], 4, 0, 2*Math.PI);
     ctx.fill();
 };
+
+//(x1,y1) - center coordinates
+//r - radius
+//color - color
+Grid.prototype.drawCircle = function(x1, y1, r, color) {
+    color = color || "#33CC33";
+    var ctx = this.context
+    //line
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.setLineWidth(4);
+    var center = this.transform([x1,y1]);
+    ctx.arc(center[0],center[1], r * this.scale, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.setLineWidth(1);
+};

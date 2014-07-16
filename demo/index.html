@@ -13,17 +13,28 @@
         <script src="base62.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function(event) {
-                var display = new GridDisplay();
-                display.loadAndRenderInto(document.getElementById("circle"));
+                var examples = document.querySelectorAll(".example");
+                for (var i = 0; i < examples.length; i++) {
+                    var display = new GridDisplay();
+                    display.loadAndRenderInto(examples[i]);
+                }
             });
         </script>
     </head>
     <body>
         <h1>Drawing by Epicycles</h1>
         <p>Imagine you followed a single point on the edge of a rotating disk. If you traced it out for a full cycle, you'd get a circle:</p>
-        <div class="example epicycle-display" id="circle" data-points="600500400500"
-            data-name="circle"
+        <div class="example epicycle-display" data-points="600500400500"
+            data-name="circle" data-editable="false"
             data-simulator-controls="true" data-grid-controls="false" data-show-grid="false" data-show-points="false">
+        </div>
+        <p>If you added a second rotating disk and traced a point around <em>it's</em> edge, you'd get a flower shape:</p>
+        <div class="example epicycle-display" data-points="600500400500"
+            data-name="flower" data-editable="false"
+            data-simulator-controls="true" data-grid-controls="false"
+                data-show-grid="false"
+                data-show-points="false"
+                data-num-gears="2">
         </div>
         <p class="intro">If you follow a dot on the edge of a disk as it rotates it will trace out a circle. If you place a second disk on top of the first and rotate both, a dot on the edge of the second disk will trace a more complex curve, called an epicycle. Adding more and more disks will produce more and more complex epicycles, and in fact, given the right sizes of disks, you can create <em>any</em> shape you desire.</p>
         <p class="intro">To see this in action, play with the simulator below. You can add points by double-clicking, and remove them by right-clicking an existing point.</p>

@@ -1,10 +1,11 @@
 /*Listens for and handles UI Interactions with the grid*/
-function GridController(grid, points, numberOfGears) {
+function GridController(grid, points, numberOfGears, editable) {
     this.grid = grid;
     this.points = points;
     this.numberOfGears = numberOfGears;
     this.sim = new Simulator(grid, [], 1);
     this.changeHandlers = [];
+    this.editable = editable !== undefined ? !!editable : true;
 
     this.showPoints = true;
 
@@ -23,19 +24,21 @@ function GridController(grid, points, numberOfGears) {
         gc.pointState[i] = {highlighted: false};
     });
 
-    this.grid.canvas.addEventListener("mousemove", function(e){ gc.mouseMove(e) });
-    this.grid.canvas.addEventListener("mousedown", function(e){
-        gc.setDragging(true);
-    });
-    this.grid.canvas.addEventListener("contextmenu", function(e){
-        e.preventDefault();
-        gc.rightClick(e);
-        return false;
-    });
-    window.addEventListener("mouseup", function(e){ 
-        gc.setDragging(false);
-    });
-    this.grid.canvas.addEventListener("dblclick", function(e){ gc.dblclick(e) });
+    if (this.editable) {
+        this.grid.canvas.addEventListener("mousemove", function(e){ gc.mouseMove(e) });
+        this.grid.canvas.addEventListener("mousedown", function(e){
+            gc.setDragging(true);
+        });
+        this.grid.canvas.addEventListener("contextmenu", function(e){
+            e.preventDefault();
+            gc.rightClick(e);
+            return false;
+        });
+        window.addEventListener("mouseup", function(e){ 
+            gc.setDragging(false);
+        });
+        this.grid.canvas.addEventListener("dblclick", function(e){ gc.dblclick(e) });
+    }
 }
 
 GridController.prototype.addPointsChangedHandler = function(handler) {
@@ -80,12 +83,19 @@ GridController.prototype.setDragging = function(dragging) {
     this.dragging = dragging;
     //if we started dragging, pause
     //if we stopped dragging, refresh points
+    if (this.dragging) {
+        this.pausedStateToDrag = this.sim.playing;
+    }
+
     if (!this.dragging) {
         if (this.pointsChangedWhileDragging) {
             this.refreshSim();
             this.pointsChangedWhileDragging = false;
         } else {
-            this.resumePlaying();
+            if (this.pausedStateToDrag) {
+                this.resumePlaying();
+            }
+            this.pausedStateToDrag = false;
         }
     }
 };
