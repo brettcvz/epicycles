@@ -84,6 +84,7 @@ GridDisplay.prototype.load = function(elem) {
 
 GridDisplay.prototype.parsePoints = function(string) {
     var points = [];
+    string = string.replace(/\s/g,'');
     for (var i = 0; i <= string.length - 6; i += 6) {
         digits = string.slice(i, i + 6);
         var X = Math.floor(digits/1000);

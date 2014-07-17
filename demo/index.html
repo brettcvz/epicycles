@@ -11,6 +11,9 @@
         <script src="gridcontroller.js"></script>
         <script src="display.js"></script>
         <script src="base62.js"></script>
+        <script type="text/javascript"
+            src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+        </script>
         <script>
             document.addEventListener("DOMContentLoaded", function(event) {
                 var examples = document.querySelectorAll(".example");
@@ -29,13 +32,15 @@
             data-simulator-controls="true" data-grid-controls="false" data-show-grid="false" data-show-points="false"
             data-width="300" data-height="200" data-scale="50">
         </div>
-        <p>If you wanted to express this path as a math equation, if we call the radius of the disk R and the speed it's rotating w, then the point on the path drawn at time t is given by:</p>
-        <div>
-            x(t) = R*cos(w*t)
-            y(t) = R*sin(w*t)
-        </div>
+        <p>If you wanted to express this path as a math equation, if we call the radius of the disk \(R\) and the speed it's rotating at \(\omega\), then the point on the path drawn at time \(t\) is given by:</p>
+        <div class="equation">\[
+            \begin{aligned}
+            x(t) &amp; = R\cos(\omega t)\\
+            y(t) &amp; = R\sin(\omega t)\\
+            \end{aligned}
+        \]</div>
         <p>If you added a second rotating disk and traced a point around <em>it's</em> edge, you'd get a flower shape:</p>
-        <div class="example epicycle-display" data-points="600500500500500600500500400500500500500400500500"
+        <div class="example epicycle-display" data-points="600500 525525 500600 475525 400500 475475 500400 525475"
             data-autoplay="false"
             data-name="flower" data-editable="false"
             data-simulator-controls="true" data-grid-controls="false"
@@ -45,10 +50,12 @@
                 data-width="300" data-height="200" data-scale="80">
         </div>
         <p>Turning this more complex path into an equation isn't too hard either, if you notice that the overall position at time t is the the position at time t due to the first disk plus the position at time t due to the second disk:</p>
-        <div>
-            x(t) = R1*cos(w1*t) + R2*cos(w2*t)
-            y(t) = R1*sin(w*t) + R2*cos(w2*t)
-        </div>
+        <div class="equation">\[
+            \begin{aligned}
+            x(t) &amp; = R_1\cos(\omega_1 t) + R_2\cos(\omega_2 t)\\
+            y(t) &amp; = R_1\sin(\omega_1 t) + R_2\sin(\omega_2 t)\\
+            \end{aligned}
+        \]</div>
         <p>By adding additional disks and varying their speeds and sizes, you can get increasing complex curves, called <em>epicycles</em></p>
         <div class="example epicycle-display" data-points="600500600400300600600600400400"
             data-name="complex" data-editable="false"
@@ -59,12 +66,16 @@
                 data-num-gears="4"
                 data-width="400" data-height="300" data-scale="60">
         </div>
-        <p>Epicycles are curves defined by the equations
-            x(t) = sum(cos...)
-            y(t) = sum(sin...)
-        </p>
+        <p>Epicycles are curves governed by the equations:</p>
+        <div class="equation">\[
+            \begin{aligned}
+            x(t) &amp; = \sum_i R_i\cos(\omega_i t + \phi_i)\\
+            y(t) &amp; = \sum_i R_i\sin(\omega_i t + \phi_i)\\
+            \end{aligned}
+        \]</div>
+        <p>Where \(\phi_i\) is how much disk \(i\) is initially rotated at time \(t = 0\).</p>
         <p>Let's dive deeper into what forms these epicycles can take. Do all epicycles have to be "curvy"? Well, if we have two disks rotating in opposite directions, we can create a straight line:</p>
-        <div class="example epicycle-display" data-points="500600500500500400500500"
+        <div class="example epicycle-display" data-points="600500500500400500500500"
             data-name="line" data-editable="false"
             data-autoplay="false"
             data-simulator-controls="true" data-grid-controls="false"
@@ -73,6 +84,13 @@
                 data-num-gears="2"
                 data-width="300" data-height="200" data-scale="80">
         </div>
+        <p>In this case, because the sizes of the circles are the same, the "y" components cancel each other out, and we get:</p>
+        <div class="equation">\[
+            \begin{aligned}
+            x(t) &amp; = R\cos(\omega t) + R\cos(-\omega t) = R\cos(\omega t) + R\cos(\omega t) = 2R\cos(\omega t)\\
+            y(t) &amp; = R\sin(\omega t) + R\sin(-\omega t) = R\sin(\omega t) - R\sin(\omega t) = 0\\
+            \end{aligned}
+        \]</div>
         <p>So it looks like we can create epicycles that are simple curves like a circle, crazy complex curves that look like who-knows-what, and a simple straight line. Also, it seems like the more disks we have, the more complex the curves can get. Given this, maybe if we have enough disks, and we choose the right sizes for each of the disks, and have them spin at the appropriate speeds, we can create <em>any closed shape</em>. And as it turns out, we can! Here's a few cool examples:
         </p>
         <p>
