@@ -45,6 +45,50 @@ GridController.prototype.addPointsChangedHandler = function(handler) {
     this.changeHandlers.push(handler);
 };
 
+GridController.prototype.getCodeForPoints = function(code) {
+    //Turn the array of points into a minimally sized string
+    //Algorithm:
+    //Every point is a pair of floats, (X,Y). Due to the grid size,
+    //We know every X and Y is -5 < X < 5
+    //Also, due to the accuracy of clicking and dragging, more than
+    //two significant figures is probably unnecessary. Therefore,
+    //we can model each X (or Y) as three digits, A, B, and C (each 0-9) such that
+    //X = (A - 5) + B/10 + C/100. Thus each pair is 6 digits. We append
+    //All these 6 digit numbers together without separators, and 
+    //base62 encode (A-Za-z0-9). In this way, 10 points = 20 floats
+    //= 60 digits. log_62(10^60) = log_10(10^60)/log_10(62) = 60/log_10(62)
+    // = 60 * .55 ~= 30 characters. If we instead used just toString(),
+    //assuming a float is 8 charaters and we use commas and brackets,
+    //we'd be at ~20 characters per point or 200 characters. So we compress
+    //by ~6-7x
+    //Adendum: Because javascript numbers can't hold arbitrarily
+    //large precision, we actually just base62 encode each set of 6 digits
+    //and pad out to 4 characters. Less compression by a bit, but easier
+    //to deal with
+    var points = this.points;
+    var result = "";
+    points.forEach(function(point){
+        var X = (point[0] + 5).toFixed(2); //X is a string
+        var Y = (point[1] + 5).toFixed(2); //Y is a string
+        var digits = (X + Y).replace(/\./g, '');
+        result += base62.pad(base62.encode(digits * 1), 4); //convert to #
+    });
+    return result;
+}
+
+GridController.prototype.loadPointsFromCode = function(code) {
+    if (!code) {return;}
+
+    this.points = [];
+    for (var i = 0; i <= code.length - 4; i += 4) {
+        var digits = base62.decode(code.slice(i, i + 4));
+        var X = Math.floor(digits/1000);
+        var Y = digits % 1000;
+        this.points.push([(X - 500)/100, (Y - 500)/100]);
+    }
+    this.pointsChanged();
+};
+
 GridController.prototype.pointsChanged = function(handler) {
     var self = this;
     this.points.forEach(function(point, i){
@@ -54,8 +98,8 @@ GridController.prototype.pointsChanged = function(handler) {
     this.refreshSim();
 };
 
-GridController.prototype.refreshSim = function(autoplay) {
-    var autoplay = autoplay !== undefined ? !!autoplay : true;
+GridController.prototype.refreshSim = function(play) {
+    var play = play !== undefined ? !!play : false;
 
     var gears = [];
     if (this.points.length > 0) {
@@ -63,20 +107,15 @@ GridController.prototype.refreshSim = function(autoplay) {
     }
 
     var self = this;
+    var wasPlaying = this.sim.playing;
+    console.log("Was playing", wasPlaying, "autoplay", play);
     this.sim.setGears(gears);
     //controls.simulator.slider.setValue(0);
-    if (autoplay) {
+    if (play || wasPlaying) {
         setTimeout(function(){
-            self.resumePlaying();
+            self.sim.play();
         }, 5);
     }
-};
-
-GridController.prototype.resumePlaying = function() {
-    //Restarts sim if we are playing
-    //if (controls.simulator.getPlayState()) {
-    this.sim.play();
-    //}
 };
 
 /*Events*/
@@ -93,11 +132,11 @@ GridController.prototype.setDragging = function(dragging) {
 
     if (!this.dragging) {
         if (this.pointsChangedWhileDragging) {
-            this.refreshSim();
+            this.refreshSim(this.pausedStateToDrag);
             this.pointsChangedWhileDragging = false;
         } else {
             if (this.pausedStateToDrag) {
-                this.resumePlaying();
+                this.sim.play();
             }
             this.pausedStateToDrag = false;
         }

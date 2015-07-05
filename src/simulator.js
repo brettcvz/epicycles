@@ -6,6 +6,7 @@ function Simulator(grid, gears, speed) {
 
     this.renderSteps = [];
     this.showPath = true;
+    this.showDisks = true;
 
     this.renderLoop();
 };
@@ -79,7 +80,9 @@ Simulator.prototype.render = function() {
         var gear = this.gears[i];
         var endX = offsetX + gear[1] * Math.cos(gear[0] * this.t + gear[2]);
         var endY = offsetY + gear[1] * Math.sin(gear[0] * this.t + gear[2]);
-        this.grid.drawCircle(offsetX, offsetY, gear[1], colors[i % colors.length]);
+        if (this.showDisks) {
+            this.grid.drawCircle(offsetX, offsetY, gear[1], colors[i % colors.length]);
+        }
         this.grid.drawStick(offsetX, offsetY, endX, endY, colors[i % colors.length]);
         offsetX = endX;
         offsetY = endY;

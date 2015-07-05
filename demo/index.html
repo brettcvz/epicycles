@@ -11,6 +11,7 @@
         <script src="gridcontroller.js"></script>
         <script src="display.js"></script>
         <script src="base62.js"></script>
+        <script src="demo.js"></script>
         <script type="text/javascript"
             src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
         </script>
@@ -26,20 +27,22 @@
     </head>
     <body>
         <h1>Drawing by Epicycles</h1>
+        <h2>Introduction to Epicycles</h2>
         <p>Imagine you followed a single point on the edge of a rotating disk. If you traced it out for a full cycle, you'd get a circle:</p>
         <div class="example epicycle-display" data-points="600500400500"
             data-name="circle" data-editable="false"
             data-simulator-controls="true" data-grid-controls="false" data-show-grid="false" data-show-points="false"
             data-width="300" data-height="200" data-scale="50">
         </div>
-        <p>If you wanted to express this path as a math equation, if we call the radius of the disk \(R\) and the speed it's rotating at \(\omega\), then the point on the path drawn at time \(t\) is given by:</p>
+        <p>If you wanted to express this path as a math equation, we could say the x and y coordinates of the point on the path drawn at time \(t\) is given by:</p>
         <div class="equation">\[
             \begin{aligned}
             x(t) &amp; = R\cos(\omega t)\\
             y(t) &amp; = R\sin(\omega t)\\
             \end{aligned}
         \]</div>
-        <p>If you added a second rotating disk and traced a point around <em>it's</em> edge, you'd get a flower shape:</p>
+        <p>Where \(R\) is the radius of the disk and \(\omega\) is the speed at which the disk is rotating. This type of formula is called a <a href="https://en.wikipedia.org/wiki/Parametric_equation">Parametric Equation</a> &mdash; if it looks unfamiliar to you, it's worth reading up on Parametric Equations a bit before continuing.</p>
+        <p>Now let's get just a little more complex: let's say you added a second rotating disk and traced a point around <em>it's</em> edge, you'd get a flower shape:</p>
         <div class="example epicycle-display" data-points="600500 525525 500600 475525 400500 475475 500400 525475"
             data-autoplay="false"
             data-name="flower" data-editable="false"
@@ -49,13 +52,14 @@
                 data-num-gears="2"
                 data-width="300" data-height="200" data-scale="80">
         </div>
-        <p>Turning this more complex path into an equation isn't too hard either, if you notice that the overall position at time t is the the position at time t due to the first disk plus the position at time t due to the second disk:</p>
+        <p>Turning this more complex path into an equation isn't too hard either: the overall position is just the sum of the contributions from each disk. More formally, the point at time t is the the position at time t due to the first disk plus the position at time t due to the second disk:</p>
         <div class="equation">\[
             \begin{aligned}
             x(t) &amp; = R_1\cos(\omega_1 t) + R_2\cos(\omega_2 t)\\
             y(t) &amp; = R_1\sin(\omega_1 t) + R_2\sin(\omega_2 t)\\
             \end{aligned}
         \]</div>
+        <p>Here \(R_1\) is the radius of the first, inner disk and \(R_2\) is the radius of the second, outer disk. We'll be using subscript notation throughout to keep track of both the radii of the disks (\(R_i\)) and the speed that they're rotating at (\(\omega_i\)).</p>
         <p>By adding additional disks and varying their speeds and sizes, you can get increasing complex curves, called <em>epicycles</em></p>
         <div class="example epicycle-display" data-points="600500600400300600600600400400"
             data-name="complex" data-editable="false"
@@ -73,7 +77,7 @@
             y(t) &amp; = \sum_i R_i\sin(\omega_i t + \phi_i)\\
             \end{aligned}
         \]</div>
-        <p>Where \(\phi_i\) is how much disk \(i\) is initially rotated at time \(t = 0\).</p>
+        <p>This new symbol \(\phi_i\) is how much disk \(i\) is initially rotated at time \(t = 0\), called a <em>phase offset</em>. If we don't specify a phase offset, we can only describe epicycles where the circles start neatly aligned, which is only a portion of the full set of epicycles.</p>
         <p>Let's dive deeper into what forms these epicycles can take. Do all epicycles have to be "curvy"? Well, if we have two disks rotating in opposite directions, we can create a straight line:</p>
         <div class="example epicycle-display" data-points="600500500500400500500500"
             data-name="line" data-editable="false"
@@ -91,44 +95,78 @@
             y(t) &amp; = R\sin(\omega t) + R\sin(-\omega t) = R\sin(\omega t) - R\sin(\omega t) = 0\\
             \end{aligned}
         \]</div>
-        <p>So it looks like we can create epicycles that are simple curves like a circle, crazy complex curves that look like who-knows-what, and a simple straight line. Also, it seems like the more disks we have, the more complex the curves can get. Given this, maybe if we have enough disks, and we choose the right sizes for each of the disks, and have them spin at the appropriate speeds, we can create <em>any closed shape</em>. And as it turns out, we can! Here's a few cool examples:
+        <p>\(y(t)\) is always zero, meaning we draw a straight line along the x axis! Neat! So it looks like we can create epicycles that are simple curves like a circle, crazy complex curves that look like who-knows-what, and a simple straight line. Also, it seems like the more disks we have, the more complex the curves can get. Given this, maybe if we have enough disks, and we choose the right sizes for each of the disks, and have them spin at the appropriate speeds, we can create <em>any closed shape</em>, like:
         </p>
-        <p>
-        <p class="intro">If you follow a dot on the edge of a disk as it rotates it will trace out a circle. If you place a second disk on top of the first and rotate both, a dot on the edge of the second disk will trace a more complex curve, called an epicycle. Adding more and more disks will produce more and more complex epicycles, and in fact, given the right sizes of disks, you can create <em>any</em> shape you desire.</p>
+        <div class="example epicycle-display" data-points="600600 600550 600500 600450 600400 550400 500400 450400 400400 400450 400500 400550 400600 450600 500600 550600"
+            data-name="square" data-editable="false"
+            data-autoplay="false"
+            data-simulator-controls="true" data-grid-controls="false"
+                data-show-grid="false"
+                data-show-points="false"
+                data-num-gears="4"
+                data-width="300" data-height="200" data-scale="60">
+        </div>
+        <div class="example epicycle-display" data-points="500600500550500500550500600500550500500500500450500400500450500500450500400500450500500500500550"
+            data-name="plus" data-editable="false"
+            data-autoplay="false"
+            data-simulator-controls="true" data-grid-controls="false"
+                data-show-grid="false"
+                data-show-points="false"
+                data-width="300" data-height="200" data-scale="60">
+        </div>
+        <div class="example epicycle-display" data-points="446640527639561571543516501501547481566437526376453374444500"
+            data-name="letter-B" data-editable="false"
+            data-autoplay="false"
+            data-simulator-controls="true" data-grid-controls="false"
+                data-show-grid="false"
+                data-show-points="false"
+                data-width="300" data-height="200" data-scale="60">
+        </div>
+        <p>As you may have guessed by this point, the answer is yes! Using epicycles, we can draw any closed shape, even <a href="https://www.youtube.com/watch?v=QVuU2YCwHjw">Homer Simpson</a>.</p>
+        <p>There's still one unanswered question though - just how exactly do we determine what disks to use, and how fast to spin them? For the epicycle drawing of the letter B above, how did we figure out the values for the various \(R_i, \omega_i,\) and \(\phi_i\) to make the drawing come out right? Let's try to figure it out.</p>
+
+        <h2>Computing Epicycles for a Path</h2>
+        <p>The first step is formalizing the problem. Rather than saying "the letter B", let's come up with a mathmatical way of describing what we want. Instead of describing a shape that I want, let's say that instead I just specify some points, and then find a formula for "connecting the dots" into the shape that I want. Getting technical, this means that our input is a set of some number of points \((x_j, y_j)\), and we want to find epicycles that best connect those points - the \(R_i, \omega_i,\) and \(\phi_i\) that makes it so</p>
+        <div class="equation">\[
+            \begin{aligned}
+            x(t) &amp; = \sum_i^N R_i\cos(\omega_i t + \phi_i)\\
+            y(t) &amp; = \sum_i^N R_i\sin(\omega_i t + \phi_i)\\
+            \end{aligned}
+        \]</div>
+        <p>comes as close to the points as possible. Then we can chose the points to draw out the letter B, solve for the variables, and have our epicycle!</p>
+        <p>Looking at the equations, you'll see we introduced a new variable \(N\): as we noticed before, the more disks we have, the closer we can get, so we'll be specific and state the problem as "If we only have \(N\) disks, what's the best we can do?"</p>
+        <p>Quick side note: in math there are many ways to say "as close to the points as possible." We'll stick with one of the more common measures called <a href="http://en.wikipedia.org/wiki/Mean_squared_error">mean square error</a> (as it turns out, this is a great choice and makes our life much easier).</p>
+        <p>Ok so now we've specified the problem - now what? Well, to be honest, this is about the time when mathematicians bang their head against a wall for a while and hope to come up with something creative. It took this author a couple of years of on-and-off exploration to chance upon something that works. As it turns out, you can use something called <a href="http://en.wikipedia.org/wiki/Euler's_formula">Euler's formula</a> and a technique called the <a href="http://en.wikipedia.org/wiki/Discrete_Fourier_transform">Discrete Fourier Transform</a> to solve this problem in a way that is not only elegant, but also very easy for computers to perform. Warning, things are going to get technical very quickly from here on out. Feel free to jump ahead to the <a href="#playground">playground</a>.</p>
+        <p>Here's how it works: you'll notice that in the above equations there seem to be a lot of similarities between how we calculate \(x(t)\) and how we calculate \(y(t)\). In fact, the only difference is that one uses "\(\cos\)" and the other uses "\(\sin\)". So maybe there's some way we could "add" the two equations together to simplify our life and only have to deal with one equation instead of two. We can't just add them directly, because we need to keep \(x(t)\) and \(y(t)\) separate, and besides \(\cos\) and \(\sin\) don't add together well anyway. Leap of faith: what if, instead of thinking about our points along the x and y axes, we think about those points as complex numbers along the real and imaginary axes? Seems crazy, but it let's us make headway:</p>
+        <div class="equation">\[
+            p_j = x_j + iy_j \\
+            x(t) + iy(t) = \sum_i^N R_i(\cos(\omega_i t + \phi_i) + i\sin(\omega_i t + \phi_i))
+        \]</div>
+        <p>Great! We have one formula, and we haven't lost anything: we can still get x by taking the real part, and y by taking the imaginary part of the function. Now we can make use of Euler's formula, and we see that we're looking for the variables such that:</p>
+        <div class="equation">\[
+            \sum_j^N R_je^{i\omega_j t+ \phi_j}
+        \]</div>
+        <p>comes as close to the complex points \(p_j\) as possible. Even better, if we allow \(X_j\) to be a complex number, then the formula above becomes:
+        <div class="equation">\[
+            \sum_j^N X_je^{i\omega_j t} 
+        \]</div>
+        <p>We'll make one final assumption to simplify things: rather than choosing \(N\) arbitrary speeds \(\omega\), we'll make the speeds be 0 (stationary), 1x, -1x, 2x, -2x, 3x, -3x, ... N/2x, -N/2x. With this simplification, we can make the final leap express our problem as:</p>
+        <p>Find the complex numbers \(X_i\) to minimize the mean squared error between the complex points \(p_j\) and the curve</p>
+        <div class="equation">\[
+            p(t) = \sum_{j=0}^N X_je^{\frac{2\pi i j}{N}t} 
+        \]</div>
+        <p>It took a lot of work to get here, but it was worth it. As it turns out, the form above almost identically matches the form of what's called the Discrete Fourier Transform. This means we can use the discrete fourier transform on the points we have (the ones that drew out the letter B, remember?), and get the \(X_j\). From that we can get the \(R_j\) and \(\phi_j\), and we know \(\omega_j = \frac{2 \pi i j}{N}\). Voila!</p>
+        <p>Ok, so how did we know to look at Fourier Transforms? Well, fourier transforms turn formulas with lots of \(\sin\)'s and \(\cos\)'s into sets of complex points and visa versa, so trying it was as good of guess as any, and happened to work out. How did we know to add \(x(t)\) and \(y(t)\) by translating them into the complex plane? Divine inspiration. Just got lucky, really - that's often how math works sometimes when you're figuring out something new.</p>
+        <p>So there you have it - if we specify a number of points, we can use an epicycle to draw out a curve that connects the dots, and we can use the Discrete Fourier Transform to figure out what that epicycle is. To see this in action, play with the playground below.</p>
+        <h2 id="playground">Create your own Epicycle Drawings</h2>
+        <p>Try playing around with creating your own drawings using epicycles. You can add points by double-clicking, and remove them by right-clicking an existing point.</p>
+
         <div class="example epicycle-display" data-points="700500500500500700500500300500500500500300500500"
             data-name="custom" data-editable="true"
             data-autoplay="false"
-            data-simulator-controls="true" data-grid-controls="true"
+            data-simulator-controls="true" data-grid-controls="true" data-share-controls="true"
                 data-show-grid="true"
                 data-show-points="true">
         </div>
-        <p class="intro">To see this in action, play with the simulator below. You can add points by double-clicking, and remove them by right-clicking an existing point.</p>
-        <div id="applet-container">
-        <div id="grid-controls">
-            <p>Example Configurations: <select id="example-select"></select></p>
-            <p><label for="show-grid">Show Grid: </label><input type="checkbox" id="show-grid" checked></p>
-            <p><label for="show-axes">Show Axes: </label><input type="checkbox" id="show-axes" checked></p>
-            <p><label for="show-path">Show Path: </label><input type="checkbox" id="show-path" checked></p>
-            <p><label for="show-points">Show Points: </label><input type="checkbox" id="show-points" checked></p>
-            <p>Maximum number of epicycles to use: 
-                <select id="max-gear-select"></select>
-            </p>
-        </div>
-        <canvas id="slate" width="600" height="500">Your browser doesn't support canvas, try using a more up-to-date browser.</canvas>
-        <div id="simulator-controls">
-            <div class="slider" id="time-slider">
-                <div class="slider-bar"></div>
-                <div class="slider-button"></div>
-            </div>
-            <div class="buttons">
-                <button id="step-backward">Step Back</button>
-                <button id="pause-play" class="pause">Pause</button>
-                <button id="step-forward">Step Forward</button>
-                <button id="fast-forward">Fast Forward</button>
-            </div>
-        </div>
-        </div>
-        <p><button id="get-link">Get Shareable Link</button><span id="share-pane">Link to this drawing: <a id="sharable-link" href=""></a></span></p>
-        <button id="save">Create animated GIF</button>
     </body>
 </html>

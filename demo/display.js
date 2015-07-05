@@ -16,10 +16,12 @@ function GridDisplay(config) {
     getDefault(this.config, config, "points", []);
     getDefault(this.config, config, "showGridControls", true);
     getDefault(this.config, config, "showSimulatorControls", true);
+    getDefault(this.config, config, "showShareControls", false);
     getDefault(this.config, config, "showGrid", true);
     getDefault(this.config, config, "showAxes", true);
     getDefault(this.config, config, "showPoints", true);
     getDefault(this.config, config, "showPath", true);
+    getDefault(this.config, config, "showDisks", true);
     getDefault(this.config, config, "editable", true);
     getDefault(this.config, config, "autoplay", true);
     getDefault(this.config, config, "width", 600);
@@ -37,10 +39,12 @@ GridDisplay.prototype.load = function(elem) {
     var mapping = {
         "grid-controls": "showGridControls",
         "simulator-controls": "showSimulatorControls",
+        "share-controls": "showShareControls",
         "show-grid": "showGrid",
         "show-axes": "showAxes",
         "show-points": "showPoints",
         "show-path": "showPath",
+        "show-disks": "showDisks",
         "editable": "editable",
         "autoplay": "autoplay",
         "name": "name",
@@ -73,7 +77,9 @@ GridDisplay.prototype.load = function(elem) {
 
     loadAttribute("name");
     loadAttribute("width");
+    this.config.width = parseInt(this.config.width, 10);
     loadAttribute("height");
+    this.config.height = parseInt(this.config.height, 10);
     loadAttribute("num-gears");
     loadAttribute("scale");
 
@@ -99,6 +105,8 @@ GridDisplay.prototype.render = function() {
     var container = document.createElement("div");
     container.className = "applet-container";
     container.style.width = this.config.width + "px";
+    container.style.height = this.config.height + "px";
+    console.log(container.style.height);
 
     var canvas = document.createElement("canvas");
     canvas.className = "slate";
@@ -106,82 +114,100 @@ GridDisplay.prototype.render = function() {
     canvas.height = this.config.height;
     canvas.innerText = "Your browser doesn't support canvas, try using a more up-to-date browser.";
 
-    //TODO: pull out scale (70)
     var scale = parseInt(this.config.scale, 10);
     var grid = new Grid(canvas, scale);
     grid.showGrid = this.config.showGrid;
     grid.showAxes = this.config.showAxes;
 
-    if (this.config.showGridControls) {
-        //TODO: separate function
-        var gridControls = this.createGridControls(grid);
-        container.appendChild(gridControls);
-    }
-
     var numberOfGears = parseInt(this.config.numGears, 10);
     console.log(this.config);
-    var controller = new GridController(grid, this.config.points, numberOfGears, this.config.editable);
+    controller = new GridController(grid, this.config.points, numberOfGears, this.config.editable);
     controller.sim.showPath = this.config.showPath;
     controller.showPoints = this.config.showPoints;
 
-    container.appendChild(canvas);
+    if (this.config.showGridControls) {
+        var gridControls = this.createGridControls(controller);
+        container.appendChild(gridControls);
+        container.style.width = (this.config.width + 200) + "px";
+    }
+
+    var simContainer = document.createElement("div");
+    simContainer.className = "sim-container";
+    simContainer.style.width = this.config.width + "px";
+
+    simContainer.appendChild(canvas);
+    container.appendChild(simContainer);
 
     if (this.config.showSimulatorControls) {
         var simControls = this.createSimulatorControls(controller.sim);
-        container.appendChild(simControls);
+        simContainer.appendChild(simControls);
 
         controller.sim.addRenderStep(function(){
             if (controller.sim.playing) {
                 curr.simulator.slider.setValue(controller.sim.t / (2 * Math.PI) * 100);
             }
         });
+        container.style.height = (this.config.height + 80) + "px";
+    }
+
+    if (this.config.showShareControls) {
+        debugger;
+        var shareControls = this.createShareControls(controller);
+        container.appendChild(shareControls);
+        container.style.height = (this.config.height + 80) + "px";
     }
 
     controller.refreshSim(this.config.autoplay);
     return container;
 }
 
-GridDisplay.prototype.createGridControls = function(grid){
+GridDisplay.prototype.createGridControls = function(controller){
     var gridControls = document.createElement("div");
     gridControls.className = "grid-controls";
 
-    //TODO: examples
-    //<p>Example Configurations: <select id="example-select"></select></p>
-
-    var controlsMapping = { 
-        "show-grid": "showGrid",
-        "show-axes": "showAxes",
-        "show-points": "showPoints",
-        "show-path": "showPath",
+    var examples = {
+        "Flower": "2Weo26cA26fO26cA1gaM26cA269m26cA",
+        "Straight Line": "26ec26cA26aY26cA",
+        "Square": "2wf62wdu2wbS26aY1Ga41GbG1Gdi26ec",
+        "Plus Sign": "26ec26do26cA2jd22wdu2jd226cA26bM26aY26bM26cA1Tc81GbG1Tc826cA26do",
+        "Letter B": "1SbS2dgj2m5B2hoo26sJ2iql2nm52cVW1TWu1RDm",
+        "Blank": "0",
     };
-    var labelsMapping = { 
-        "show-grid": "Show Grid",
-        "show-axes": "Show Axes",
-        "show-points": "Show Points",
-        "show-path": "Show Path",
-    };
+    var defaultExample = "Square";
+    var examplesUi = new ExampleControlsUI(controller, examples, defaultExample);
+    gridControls.appendChild(examplesUi.render());
 
-    for (var prop in controlsMapping) {
-        var id = this.config.name + "-" + prop;
-        var p = document.createElement("p");
-        var l = document.createElement("label");
+    var ui = new GridControlsUI(controller, this.config);
+    gridControls.appendChild(ui.render());
 
-        l.setAttribute("for", id);
-        l.innerText = labelsMapping[prop];
-        var i = document.createElement("input");
-        i.setAttribute("type", "checkbox");
-        i.id = id;
-
-        if (this.config[controlsMapping[prop]]) {
-            i.setAttribute("checked", "checked");
-        }
-
-        p.appendChild(l);
-        p.appendChild(i);
-        gridControls.appendChild(p);
-    };
     return gridControls;
 }
+
+GridDisplay.prototype.createShareControls = function(controller) {
+    var shareControls = document.createElement("div");
+    shareControls.className = "share-controls";
+
+    var shareButton = document.createElement("button");
+    shareButton.innerText = "Get a link to this drawing";
+
+    var shareLink = document.createElement("a");
+    shareLink.innerText = "Link";
+    shareLink.setAttribute("target","_blank");
+    shareLink.style.display = "none";
+
+    shareButton.innerText = "Get a link to this drawing";
+    shareButton.addEventListener("click", function(){
+        var code = controller.getCodeForPoints();
+        var href = window.location.protocol + "//" + 
+                    window.location.host + window.location.pathname + "#" + code;
+        shareLink.setAttribute("href", href);
+        shareLink.textContent = href;
+        shareLink.style.display = "inline";
+    });
+    shareControls.appendChild(shareButton);
+    shareControls.appendChild(shareLink);
+    return shareControls
+};
 
 GridDisplay.prototype.createSimulatorControls = function(sim) {
     var simControls = document.createElement("div");

@@ -2,10 +2,13 @@
     margin: auto;
 }
 
+.sim-container {
+    float: left;
+}
+
 .slate {
     border: 1px solid #000;
     display: block;
-    float: left;
 }
 
 .grid-controls, .epicycles-controls {
@@ -14,6 +17,7 @@
     float: left;
     height: 100%;
     margin: 0 4px;
+    margin-left: -95px;
 }
 
 .simulator-controls {

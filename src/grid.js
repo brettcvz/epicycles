@@ -138,9 +138,9 @@ Grid.prototype.drawCircle = function(x1, y1, r, color) {
     //line
     ctx.beginPath();
     ctx.strokeStyle = color;
-    ctx.setLineWidth(3);
+    ctx.lineWidth = 3;
     var center = this.transform([x1,y1]);
     ctx.arc(center[0],center[1], r * this.scale, 0, 2 * Math.PI);
     ctx.stroke();
-    ctx.setLineWidth(1);
+    ctx.lineWidth = 1;
 };
