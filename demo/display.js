@@ -151,7 +151,6 @@ GridDisplay.prototype.render = function() {
     }
 
     if (this.config.showShareControls) {
-        debugger;
         var shareControls = this.createShareControls(controller);
         container.appendChild(shareControls);
         container.style.height = (this.config.height + 80) + "px";
