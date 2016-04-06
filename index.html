@@ -144,7 +144,7 @@
         \]</div>
         <p>Great! We have one formula, and we haven't lost anything: we can still get x by taking the real part, and y by taking the imaginary part of the function. Now we can make use of Euler's formula, and we see that we're looking for the variables such that:</p>
         <div class="equation">\[
-            \sum_j^N R_je^{i\omega_j t+ \phi_j}
+            \sum_j^N R_je^{i(\omega_j t+ \phi_j)}
         \]</div>
         <p>comes as close to the complex points \(p_j\) as possible. Even better, if we allow \(X_j\) to be a complex number, then the formula above becomes:
         <div class="equation">\[
@@ -153,9 +153,9 @@
         <p>We'll make one final assumption to simplify things: rather than choosing \(N\) arbitrary speeds \(\omega\), we'll make the speeds be 0 (stationary), 1x, -1x, 2x, -2x, 3x, -3x, ... N/2x, -N/2x. With this simplification, we can make the final leap express our problem as:</p>
         <p>Find the complex numbers \(X_i\) to minimize the mean squared error between the complex points \(p_j\) and the curve</p>
         <div class="equation">\[
-            p(t) = \sum_{j=0}^N X_je^{\frac{2\pi i j}{N}t} 
+            p(t) = \sum_{j=0}^N X_je^{i\frac{2\pi j}{N}t} 
         \]</div>
-        <p>It took a lot of work to get here, but it was worth it. As it turns out, the form above almost identically matches the form of what's called the Discrete Fourier Transform. This means we can use the discrete fourier transform on the points we have (the ones that drew out the letter B, remember?), and get the \(X_j\). From that we can get the \(R_j\) and \(\phi_j\), and we know \(\omega_j = \frac{2 \pi i j}{N}\). Voila!</p>
+        <p>It took a lot of work to get here, but it was worth it. As it turns out, the form above almost identically matches the form of what's called the Discrete Fourier Transform. This means we can use the discrete fourier transform on the points we have (the ones that drew out the letter B, remember?), and get the \(X_j\). From that we can get the \(R_j\) and \(\phi_j\), and we know \(\omega_j = \frac{2 \pi j}{N}\). Voila!</p>
         <p>Ok, so how did we know to look at Fourier Transforms? Well, fourier transforms turn formulas with lots of \(\sin\)'s and \(\cos\)'s into sets of complex points and visa versa, so trying it was as good of guess as any, and happened to work out. How did we know to add \(x(t)\) and \(y(t)\) by translating them into the complex plane? Divine inspiration. Just got lucky, really - that's often how math works sometimes when you're figuring out something new.</p>
         <p>So there you have it - if we specify a number of points, we can use an epicycle to draw out a curve that connects the dots, and we can use the Discrete Fourier Transform to figure out what that epicycle is. To see this in action, play with the playground below.</p>
         <h2 id="playground">Create your own Epicycle Drawings</h2>
